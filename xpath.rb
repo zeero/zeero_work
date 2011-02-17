@@ -2,9 +2,9 @@ require 'rubygems'
 require 'nokogiri'
 
 class XPath
-  def XPath.main(filepath, query)
+  def self.main(filepath, query)
     doc = Nokogiri::HTML(open(filepath))
-    return doc.xpath(query)
+    return doc.xpath(query).map {|e| e.to_s}
   end
 end
 
@@ -16,7 +16,11 @@ if __FILE__ == $0
     puts " ex) ruby #{__FILE__} sample.html \'//tr[@class=\"plugin_sev_high\"]/td/text()\'"
     exit 1
   end
-  filepath = ARGV[0]
+  if File::ALT_SEPARATOR
+    filepath = ARGV[0].gsub(/#{File::ALT_SEPARATOR}/o, File::SEPARATOR)
+  else
+    filepath = ARGV[0]
+  end
   query = ARGV[1]
 
   puts XPath.main(filepath, query)
