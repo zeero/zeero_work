@@ -1,18 +1,26 @@
 require 'rubygems'
 require 'nokogiri'
 
-# init
-if ($*.size == 0)
-  puts "Usage: ruby #{__FILE__} FILE XPATH"
-  puts ""
-  puts " ex) ruby #{__FILE__} nessus_report.html \'//tr[@class=\"plugin_sev_high\"]/td/text()\'"
-  exit 1
+class XPath
+  def XPath.main(filepath, query)
+    doc = Nokogiri::HTML(open(filepath))
+    return doc.xpath(query)
+  end
 end
-filepath = ARGV[0]
-query = ARGV[1]
 
-doc = Nokogiri::HTML(open(filepath))
-puts doc.xpath(query)
+if __FILE__ == $0
+  # validate args
+  if $*.size == 0
+    puts "Usage: ruby #{__FILE__} FILE XPATH"
+    puts ""
+    puts " ex) ruby #{__FILE__} sample.html \'//tr[@class=\"plugin_sev_high\"]/td/text()\'"
+    exit 1
+  end
+  filepath = ARGV[0]
+  query = ARGV[1]
+
+  puts XPath.main(filepath, query)
+end
 
 # >> Apache Chunked Encoding Remote Overflow
 # >> Apache &lt; 1.3.27 Multiple Vulnerabilities (DoS, XSS)
