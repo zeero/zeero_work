@@ -17,7 +17,7 @@ if __FILE__ == $0
     exit 1
   end
   if File::ALT_SEPARATOR
-    filepath = ARGV[0].gsub(/#{File::ALT_SEPARATOR}/o, File::SEPARATOR)
+    filepath = ARGV[0].gsub(File::ALT_SEPARATOR, File::SEPARATOR)
   else
     filepath = ARGV[0]
   end
