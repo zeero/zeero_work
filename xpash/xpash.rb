@@ -2,8 +2,7 @@ require 'rubygems'
 require 'nokogiri'
 
 class XPash
-  attr_reader :query
-  attr_reader :list
+  attr_reader :query, :list
 
   def initialize(filepath)
     @doc = Nokogiri::HTML(open(filepath))
@@ -26,14 +25,22 @@ class XPash
     end
   end
 
-  def xpath(query)
-    @query += query
-    @list = @doc.xpath(@query)
-    @list.size
+  def cd(path)
+    begin
+      @list = @doc.xpath(@query + path)
+      @query += path
+      puts "=> #{@list.size}"
+    rescue Nokogiri::XML::XPath::SyntaxError => e
+      puts "Error: #{e}"
+    end
   end
 
-  def ls(test)
+  def ls(opts = nil)
     puts @list
+  end
+
+  def quit(opts = nil)
+    exit
   end
 
 end
@@ -53,7 +60,7 @@ if __FILE__ == $0
   xpash = XPash.new(filepath)
 
   if ARGV[1] != nil
-    xpash.xpath(ARGV[1])
+    xpash.cd(ARGV[1])
     puts xpash.ls
     exit
   end
