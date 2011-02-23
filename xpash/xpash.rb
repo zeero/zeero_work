@@ -1,45 +1,74 @@
+require 'logger'
+
 require 'rubygems'
 require 'nokogiri'
 
 class XPash
+
+  DEFAULT_PATH = "//"
+
   attr_reader :query, :list
 
   def initialize(filepath)
     @doc = Nokogiri::HTML(open(filepath))
-    @query = "//"
+    @query = DEFAULT_PATH
+
+    @log = Logger.new(STDOUT)
+    @log.level = Logger::WARN if ! $DEBUG
   end
 
   def eval(input)
     input_a = input.split
     command = input_a.shift
     args = input_a.join
+    @log.debug("args: #{args}")
 
     if command == nil
       return
     end
 
     if self.respond_to?(command)
-      self.send(command, args)
+      if "" == args
+        self.send(command)
+      else
+        self.send(command, args)
+      end
     else
-      puts "Error: #{command} is not xpash command."
+      puts "Error: \'#{command}\' is not xpash command."
     end
   end
 
   def cd(path)
+
+    case path
+    when /^\//
+      query = path
+    when /^\.\./
+      arr = @query.split("/")
+      arr.pop
+      query = arr.join("/")
+    else
+      if /\/$/ =~ @query
+        query = @query + path
+      else
+        query = @query + "/" + path
+      end
+    end
+
     begin
-      @list = @doc.xpath(@query + path)
-      @query += path
-      puts "=> #{@list.size}"
+      @list = @doc.xpath(query)
+      @query = query
+      @list.size
     rescue Nokogiri::XML::XPath::SyntaxError => e
       puts "Error: #{e}"
     end
   end
 
-  def ls(opts = nil)
+  def ls
     puts @list
   end
 
-  def quit(opts = nil)
+  def quit
     exit
   end
 
@@ -69,7 +98,8 @@ if __FILE__ == $0
   while true do
     print "xpash[#{xpash.query}]> "
     input = gets.chop
-    xpash.eval(input)
+    result = xpash.eval(input)
+    puts "=> #{result}" if result
   end
 
 end
