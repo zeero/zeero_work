@@ -98,7 +98,7 @@ if __FILE__ == $0
         next
       end
 
-      result = xpash.eval(input.chop)
+      result = xpash.eval(input.chomp)
 
       puts "=> #{result}" if result
     rescue Nokogiri::XML::XPath::SyntaxError => e
