@@ -61,6 +61,10 @@ class XPash
   def ls(args)
     puts @list
   end
+  alias :list :ls
+
+  def up(args)
+  end
 
   def quit(args)
     exit
