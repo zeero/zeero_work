@@ -19,21 +19,17 @@ class XPash
   end
 
   def eval(input)
+    if "" == input
+      return
+    end
+
     input_a = input.split
     command = input_a.shift
     args = input_a.join
     @log.debug("args: #{args}")
 
-    if command == nil
-      return
-    end
-
     if self.respond_to?(command)
-      if "" == args
-        self.send(command)
-      else
-        self.send(command, args)
-      end
+      self.send(command, args)
     else
       puts "Error: \'#{command}\' is not xpash command."
     end
@@ -57,20 +53,16 @@ class XPash
       end
     end
 
-    begin
-      @list = @doc.xpath(query)
-      @query = query
-      @list.size
-    rescue Nokogiri::XML::XPath::SyntaxError => e
-      puts "Error: #{e}"
-    end
+    @list = @doc.xpath(query)
+    @query = query
+    @list.size
   end
 
-  def ls
+  def ls(args)
     puts @list
   end
 
-  def quit
+  def quit(args)
     exit
   end
 
@@ -97,11 +89,23 @@ if __FILE__ == $0
   end
 
   # main loop
+  Signal.trap(:INT, nil)
   while true do
-    print "xpash[#{xpash.query}]> "
-    input = gets.chop
-    result = xpash.eval(input)
-    puts "=> #{result}" if result
+    begin
+      print "xpash[#{xpash.query}]> "
+
+      input = gets
+      if ! input
+        puts
+        next
+      end
+
+      result = xpash.eval(input.chomp)
+
+      puts "=> #{result}" if result
+    rescue Nokogiri::XML::XPath::SyntaxError => e
+      puts "Error: #{e}"
+    end
   end
 
 end
