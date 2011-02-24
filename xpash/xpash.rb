@@ -6,6 +6,7 @@ require 'nokogiri'
 class XPash
 
   DEFAULT_PATH = "//"
+  ROOT_PATH = "/"
 
   attr_reader :query, :list
 
@@ -47,6 +48,7 @@ class XPash
       arr = @query.split("/")
       arr.pop
       query = arr.join("/")
+      query = ROOT_PATH if query == ""
     else
       if /\/$/ =~ @query
         query = @query + path
