@@ -13,7 +13,7 @@ class XPash
   DEFAULT_PATH = "//"
   ROOT_PATH = "/"
 
-  attr_reader :query, :list
+  attr_reader :query
 
   def initialize(filepath)
     @doc = Nokogiri::HTML(open(filepath))
@@ -40,7 +40,7 @@ class XPash
     end
   end
 
-  def cd(path)
+  def cd(path = nil)
 
     case path
     when /^\//
@@ -63,19 +63,24 @@ class XPash
     @list.size
   end
 
-  def ls(args)
+  def ls(args = nil)
     puts @list
   end
   alias :list :ls
 
-  def up(args)
+  def up(args = nil)
   end
 
-  def quit(args)
+  def quit(args = nil)
     exit
   end
 
+  def self.xpath(filepath, query)
+    doc = Nokogiri::HTML(open(filepath))
+    return doc.xpath(query).map {|e| e.to_s}
+  end
 end
+
 
 if __FILE__ == $0
 
@@ -87,13 +92,13 @@ if __FILE__ == $0
     end
   else
     #puts "file path?"
-    filepath = "../sample.html"
+    filepath = "#{File.dirname($0)}/sample.html"
   end
   xpash = XPash.new(filepath)
 
   if ARGV[1] != nil
     xpash.cd(ARGV[1])
-    puts xpash.ls
+    xpash.ls
     exit
   end
 
