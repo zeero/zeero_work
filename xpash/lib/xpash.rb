@@ -1,3 +1,4 @@
+# Add this library to $LOAD_PATH
 $:.unshift(File.dirname(__FILE__)) unless
   $:.include?(File.dirname(__FILE__)) || $:.include?(File.expand_path(File.dirname(__FILE__)))
 
@@ -20,7 +21,7 @@ class XPash
     @query = DEFAULT_PATH
 
     @log = Logger.new(STDOUT)
-    @log.level = Logger::WARN if ! $DEBUG
+    @log.level = Logger::WARN unless $DEBUG
   end
 
   def eval(input)
@@ -31,7 +32,7 @@ class XPash
     input_a = input.split
     command = input_a.shift
     args = input_a.join
-    @log.debug("args: #{args}")
+    @log.debug("command => #{command}, args => #{args}")
 
     if self.respond_to?(command)
       self.send(command, args)
@@ -44,12 +45,18 @@ class XPash
 
     case path
     when /^\//
+      # absolute path
       query = path
     when /^\.\./
-      arr = @query.split("/")
-      arr.pop
-      query = arr.join("/")
-      query = ROOT_PATH if query == ""
+      # go up
+      if /(^.*[^\/]+)\/+.+?$/ =~ @query
+        query = $1
+      else
+        query = ROOT_PATH
+      end
+    when /^\[/
+      # add condition
+      query = @query + path
     else
       if /\/$/ =~ @query
         query = @query + path
@@ -64,7 +71,34 @@ class XPash
   end
 
   def ls(args = nil)
-    puts @list
+    @list.each {|e|
+      case e
+      when Nokogiri::XML::Element
+        print e.name
+
+        # print attributes
+        attr_a = e.attributes
+        if attr_a.size > 0
+          first = attr_a.shift
+          attr = "@#{first[0]}=#{first[1]}"
+          attr_a.each {|key, value|
+            attr += " and @#{key}=#{value}"
+          }
+          print "[#{attr}]"
+        end
+
+        # print childs
+        children = e.children
+        if children.size > 0
+          puts ":"
+          children.each {|child|
+            puts child.name
+          }
+        end
+        puts
+      end
+    }
+    return
   end
   alias :list :ls
 
@@ -84,7 +118,7 @@ end
 
 if __FILE__ == $0
 
-  if ARGV[0] != nil
+  if ARGV[0]
     if File::ALT_SEPARATOR
       filepath = ARGV[0].gsub(File::ALT_SEPARATOR, File::SEPARATOR)
     else
@@ -92,11 +126,11 @@ if __FILE__ == $0
     end
   else
     #puts "file path?"
-    filepath = "#{File.dirname($0)}/sample.html"
+    filepath = "#{File.dirname($0)}/../test/test.html"
   end
   xpash = XPash.new(filepath)
 
-  if ARGV[1] != nil
+  if ARGV[1]
     xpash.cd(ARGV[1])
     xpash.ls
     exit
@@ -109,7 +143,7 @@ if __FILE__ == $0
       print "xpash[#{xpash.query}]> "
 
       input = gets
-      if ! input
+      unless input
         puts
         next
       end

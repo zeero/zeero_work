@@ -3,11 +3,7 @@ require File.dirname(__FILE__) + '/test_helper.rb'
 class TestXPash < Test::Unit::TestCase
 
   def setup
-    @xpash = XPash.new("#{File.dirname($0)}/test.html")
-  end
-  
-  def test_truth
-    assert true
+    @xpash = XPash.new("#{File.dirname(__FILE__)}/test.html")
   end
 
   def test_cd
@@ -22,8 +18,13 @@ class TestXPash < Test::Unit::TestCase
 
   def test_cd_abspath
     asserts_cd("/html/head/link", 3, "/html/head/link")
-    
+
     asserts_cd("//div//li", 3, "//div//li")
+    asserts_cd("..", 3, "//div")
+  end
+
+  def test_cd_at_init
+    asserts_cd("..", 1, "/")
   end
 
   def asserts_cd(input, expect_return, expect_query)
@@ -31,9 +32,8 @@ class TestXPash < Test::Unit::TestCase
     assert_equal(expect_query, @xpash.query)
     if /^.+?:\d+(?::in `(.*)')?/ =~ caller.first
       puts
-      puts "#{$1}:"
+      puts "!#{$1}"
       @xpash.list
-      puts
     end
   end
 end
