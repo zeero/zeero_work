@@ -74,28 +74,7 @@ class XPash
     @list.each {|e|
       case e
       when Nokogiri::XML::Element
-        print e.name
-
-        # print attributes
-        attr_a = e.attributes
-        if attr_a.size > 0
-          first = attr_a.shift
-          attr = "@#{first[0]}=#{first[1]}"
-          attr_a.each {|key, value|
-            attr += " and @#{key}=#{value}"
-          }
-          print "[#{attr}]"
-        end
-
-        # print childs
-        children = e.children
-        if children.size > 0
-          puts ":"
-          children.each {|child|
-            puts child.name
-          }
-        end
-        puts
+        e.ls
       end
     }
     return
@@ -105,15 +84,44 @@ class XPash
   def up(args = nil)
   end
 
-  def quit(args = nil)
-    exit
+  def exit(args = nil)
+    Kernel.exit
   end
+  alias :quit :exit
 
   def self.xpath(filepath, query)
     doc = Nokogiri::HTML(open(filepath))
     return doc.xpath(query).map {|e| e.to_s}
   end
 end
+
+class Nokogiri::XML::Element
+  def ls(opts = nil)
+    print self.name
+
+    # print attributes
+    attr_a = self.attributes
+    if attr_a.size > 0
+      first = attr_a.shift
+      attr = "@#{first[0]}=#{first[1]}"
+      attr_a.each {|key, value|
+        attr += " and @#{key}=#{value}"
+      }
+      print "[#{attr}]"
+    end
+
+    # print childs
+    children = self.children
+    if children.size > 0
+      puts ":"
+      children.each {|child|
+        puts child.name
+      }
+    end
+    puts
+  end
+end
+
 
 
 if __FILE__ == $0
