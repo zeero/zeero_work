@@ -3,7 +3,6 @@ Manifest.txt
 PostInstall.txt
 README.rdoc
 Rakefile
-help.rb
 lib/xpash.rb
 script/console
 script/console.cmd
@@ -11,6 +10,10 @@ script/destroy
 script/destroy.cmd
 script/generate
 script/generate.cmd
+spec/spec.opts
+spec/spec_helper.rb
+spec/xpash_spec.rb
+tasks/rspec.rake
+test/test.html
 test/test_helper.rb
 test/test_xpash.rb
-xpash.rb
