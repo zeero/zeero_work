@@ -76,9 +76,9 @@ class XPash
     if args
       args_a = args.split
       OptionParser.new(nil , 16) {|o|
-        o.banner = "ls: List matched elements themselves and their child.\n"
+        o.banner = "ls: List matched elements themselves and their child."
         o.separator("Options:")
-        o.on("-h", "--help", "This help.") {|boolean| puts o.help}
+        o.on("-h", "--help", "This help.") {|boolean| puts o.help; return}
         o.parse!(args_a)
       }
     end
