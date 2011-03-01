@@ -19,6 +19,7 @@ class XPash
   def initialize(filepath)
     @doc = Nokogiri::HTML(open(filepath))
     @query = DEFAULT_PATH
+    @list = Array.new
 
     @log = Logger.new(STDOUT)
     @log.level = Logger::WARN unless $DEBUG
@@ -74,7 +75,7 @@ class XPash
     @list.each {|e|
       case e
       when Nokogiri::XML::Element
-        e.ls
+        e.ls(@query, args)
       end
     }
     return
@@ -95,17 +96,24 @@ class XPash
   end
 end
 
+class Nokogiri::XML::Document
+end
+class Nokogiri::XML::Attr
+end
+class Nokogiri::XML::Text
+end
 class Nokogiri::XML::Element
-  def ls(opts = nil)
-    print self.name
+  def ls(xpath, args = nil)
+    # print xpath without attributes
+    print xpath.gsub(/\[.+?\]$/, "")
 
     # print attributes
     attr_a = self.attributes
     if attr_a.size > 0
       first = attr_a.shift
-      attr = "@#{first[0]}=#{first[1]}"
+      attr = "@#{first[0]}=\"#{first[1]}\""
       attr_a.each {|key, value|
-        attr += " and @#{key}=#{value}"
+        attr += " and @#{key}=\"#{value}\""
       }
       print "[#{attr}]"
     end
@@ -118,6 +126,7 @@ class Nokogiri::XML::Element
         puts child.name
       }
     end
+
     puts
   end
 end
