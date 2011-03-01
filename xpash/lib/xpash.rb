@@ -3,6 +3,7 @@ $:.unshift(File.dirname(__FILE__)) unless
   $:.include?(File.dirname(__FILE__)) || $:.include?(File.expand_path(File.dirname(__FILE__)))
 
 require 'logger'
+require 'optparse'
 
 require 'rubygems'
 require 'nokogiri'
@@ -32,7 +33,7 @@ class XPash
 
     input_a = input.split
     command = input_a.shift
-    args = input_a.join
+    args = input_a.join(" ")
     @log.debug("command => #{command}, args => #{args}")
 
     if self.respond_to?(command)
@@ -72,6 +73,16 @@ class XPash
   end
 
   def ls(args = nil)
+    if args
+      args_a = args.split
+      OptionParser.new(nil , 16) {|o|
+        o.banner = "ls: List matched elements themselves and their child.\n"
+        o.separator("Options:")
+        o.on("-h", "--help", "This help.") {|boolean| puts o.help}
+        o.parse!(args_a)
+      }
+    end
+
     @list.each {|e|
       case e
       when Nokogiri::XML::Element
