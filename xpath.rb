@@ -1,3 +1,5 @@
+require 'optparse'
+
 require 'rubygems'
 require 'nokogiri'
 
@@ -10,12 +12,22 @@ end
 
 if __FILE__ == $0
   # validate args
-  if $*.size == 0
-    puts "Usage: ruby #{__FILE__} FILE XPATH"
-    puts ""
-    puts " ex) ruby #{__FILE__} sample.html \'//tr[@class=\"plugin_sev_high\"]/td/text()\'"
-    exit 1
-  end
+  OptionParser.new {|opt|
+    opt.banner = <<-BANNER.gsub(/^      /, "")
+      Usage: ruby #{__FILE__} FILE XPATH
+
+       ex) ruby #{__FILE__} sample.html \'//tr[@class=\"plugin_sev_high\"]/td/text()\'
+
+      BANNER
+    opt.version = 1.0
+    opt.parse!(ARGV)
+
+    if ARGV.size == 0
+      puts opt.help
+      exit 1
+    end
+  }
+
   if File::ALT_SEPARATOR
     filepath = ARGV[0].gsub(File::ALT_SEPARATOR, File::SEPARATOR)
   else
