@@ -3,7 +3,10 @@ console.log(process.env.TOKEN);
 
 // Initialize Github API Library
 var Github = require('github-api');
-var github = new Github({ token: process.env.TOKEN });
+var github = new Github({
+  token: process.env.TOKEN,
+  auth: 'oauth'
+});
 console.log('github:');
 console.log(github);
 
@@ -12,17 +15,33 @@ var repo = github.getRepo('zeero', 'zeero_work');
 console.log('repo:');
 console.log(repo);
 repo.show(function(err, data){
+  if (err) { console.log('err: ' + err); }
   console.log('repo_show:');
   console.log(data.full_name);
-  console.log('err: ' + err);
 });
 
 // Read file
 var fs = require('fs');
-fs.readFile('./index.html', 'utf8', function(err, text) {
+fs.readFile('./test.txt', 'utf8', function(err, text) {
+  if (err) { console.log('err: ' + err); }
   console.log('text:');
   console.log(text);
-  console.log('err: ' + err);
+  repo.write('gh-pages', 'text.txt', text, 'add test.txt', function(err, sha) {
+    if (err) { console.log('err: ' + JSON.stringify(err)); }
+    console.log('sha:');
+    console.log(sha);
+  });
 });
 
-
+// repo.read('gh-pages', 'index.html', function(err, data) {
+//   if (err) { console.log('err: ' + err); }
+//   console.log('read:');
+//   console.log(data);
+// });
+//
+// repo.write('gh-pages', 'text.txt', 'testtest', 'add test.txt', function(err, sha) {
+//   if (err) { console.log('err: ' + JSON.stringify(err)); }
+//   console.log('sha:');
+//   console.log(sha);
+// });
+//
