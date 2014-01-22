@@ -1,0 +1,23 @@
+{
+  "name": "zeero_work",
+  "version": "0.0.1",
+  "description": "Github Pages",
+  "main": "tw-GithubPlugin.js",
+  "dependencies": {
+    "github-api": ">=0.7.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zeero/zeero_work.git"
+  },
+  "author": "zeero",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/zeero/zeero_work/issues"
+  },
+  "homepage": "https://zeero.github.io/zeero_work"
+}
