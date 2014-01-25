@@ -2364,10 +2364,20 @@ This plugin provides a way of saving tiddlywiki in Github repository.
 /*global $tw: false */
 "use strict";
 
+var widget = require("$:/core/modules/widgets/widget.js");
+
 exports.startup = function() {
   if ($tw.browser) {
-    var twPageControls = document.getElementsByTagName("header");
-    console.log(twPageControls);
+    $tw.myWidget = new widget.widget({
+      type: "widget",
+      children: []
+    },{
+      wiki: $tw.wiki,
+      document: document
+    });
+    document.addEventListener("tw-github-push", function(event){
+      alert("test");
+    });
   }
 };
 
