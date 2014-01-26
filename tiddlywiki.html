@@ -2401,7 +2401,9 @@ This plugin provides a way of saving tiddlywiki in Github repository.
 exports.startup = function() {
   if ($tw.browser) {
     $tw.rootWidget.addEventListener("tw-github-push", function(event){
-      alert("test");
+      var text = $tw.wiki.renderTiddler("text/plain", "$:/core/save/all");
+      alert("target length: " + text.length);
+      $tw.notifier.display("$:/messages/Saved");
     });
   }
 };
